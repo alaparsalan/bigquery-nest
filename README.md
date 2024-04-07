@@ -1,74 +1,67 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+BigQuery Integration for Nest.js Projects
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+This README.md guides you through setting up and using Google BigQuery for data storage and querying within your Nest.js application. BigQuery is a powerful, scalable, and serverless data warehouse that seamlessly integrates with Google Cloud Platform (GCP).
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Prerequisites
 
-## Description
+- A Nest.js project 
+- A Google Cloud Platform (GCP) project ([Create Project](https://developers.google.com/workspace/guides/create-project))
+- The Google Cloud SDK installed and configured ([Install SDK](https://cloud.google.com/sdk/docs/install))
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 1. Project Setup
 
-## Installation
+### 1.1. Create a Service Account Key
+
+1. In the GCP Console, navigate to **IAM & Admin -> Service Accounts**.
+2. Click **Create Service Account**.
+3. Give your service account a descriptive name (e.g., `nest-bigquery-service-account`).
+4. Grant it the **BigQuery Data Editor** role to enable data manipulation.
+5. Click **Create** and download the JSON key file (e.g., `nest-bigquery-key.json`). Store it securely.
+
+### 1.2. Install Required Packages
+
+In your Nest.js project, install the `@google-cloud/bigquery` package using npm or yarn:
 
 ```bash
-$ npm install
+npm install @google-cloud/bigquery
 ```
 
-## Running the app
+2. Configuration
+
+2.1. Create a BigQuery Client
+
+In a Nest.js service or module, import the BigQuery class and create a client instance using the downloaded JSON key file path:
+
+```typescript
+import { Injectable } from '@nestjs/common';
+import { BigQuery } from '@google-cloud/bigquery';
+
+@Injectable()
+export class BigQueryService {
+  private readonly bigquery: BigQuery;
+
+  constructor() {
+    this.bigquery = new BigQuery({
+      keyFilename: 'path/to/nest-bigquery-key.json', // Replace with your key file path
+    });
+  }
+
+  // ... BigQuery operations ...
+}
+```
+
+### 2.2. (Optional) Environment Variables
+
+For improved security and flexibility, consider storing BigQuery project ID and dataset ID as environment variables:
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+export BIGQUERY_PROJECT_ID=your-project-id
+export BIGQUERY_DATASET_ID=your-dataset-id
 ```
+Access them in your Nest.js code using process.env:
 
-## Test
+```typescript
+const projectId = process.env.BIGQUERY_PROJECT_ID;
 
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+const datasetId = process.env.BIGQUERY_DATASET_ID;
 ```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
-# bigquery-nest
